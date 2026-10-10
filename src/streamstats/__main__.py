@@ -11,12 +11,15 @@ from streamstats.report import writing_report
 def main(arguments: list[str]| None = None) -> None:
     '''Чтение командной строки, чтение файлов, анализ и формирование файла с отчетом'''
 
+    raw_arguments = list(sys.argv[:-1]) if arguments is None else list(arguments)#если параметры команды
+    # переданы явно, то они принимаются сразу, иначе берем sys.argv
+
     #Разбор командной строки
     parser = argparse.ArgumentParser(prog='streamstats', description='Потоковый анализатор файлов')
     subparsers = parser.add_subparsers(dest='command', required=True, help='подкоманды') #создание подкоманд
 
     analyze_parser = subparsers.add_parser('analyze', help='анализ файлов')
-    analyze_parser.add_argument('input',nargs='+', help='входные файлы')
+    analyze_parser.add_argument('input',nargs='+', help='входной(ые) файл(ы)')
     analyze_parser.add_argument('--format', choices = ['csv','jsonl'], required=True, help='формат файлов')
     analyze_parser.add_argument('--output', default='REPORT.json', help='путь файла с отчетом(по умолчанию: "REPORT.json"')
     analyze_parser.add_argument('--skip-invalid', action='store_true', help='пропуск некорректных строк')

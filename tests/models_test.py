@@ -1,7 +1,8 @@
 import pytest
 
-from streamstats.models import validation
 from streamstats.errors import IncorrectEventError, IncorrectTimestampError
+from streamstats.models import validation
+
 
 def test_correct_dict():
     '''Проверка корректной строки'''
