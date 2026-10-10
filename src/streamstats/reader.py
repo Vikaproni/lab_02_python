@@ -1,5 +1,6 @@
 '''Чтение файла'''
 import logging
+from typing import Any, Generator
 
 from streamstats.errors import (
     IncorrectEventError,
@@ -13,7 +14,8 @@ logger = logging.getLogger(__name__) #присваивание логгера м
 
 fields = ('timestamp','level','source','message') #необходимые поля
 
-def read_file(file_path,file_format,skip_invalid=False,skipped=None):
+def read_file(file_path:str,file_format:str,skip_invalid:bool=False,skipped:list|None=None) -> Generator[
+    tuple[int, dict[str, Any]], Any, None]:
 
     #счетчик пропущенных некорректных строк
     if skipped is None:

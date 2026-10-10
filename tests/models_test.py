@@ -44,12 +44,12 @@ def test_uncorrectable_value_bool():
 
 def test_uncorrectable_value_in_level():
     '''Недопустимое значение "level" '''
-    with pytest.raises(IncorrectEventError, match = 'Неверно введено значение поля'):
+    with pytest.raises(IncorrectEventError, match = 'level: Неверно введено значение поля'):
         validation({'timestamp':'2026-01-10T09:11:02','level':'lalalala','source':'server1',
                        'message':'Запрос на /api/users обработан за 12 мс'})
 
 def test_uncorrectable_value_in_timestamp():
     '''Недопустимое значение "timestamp" '''
-    with pytest.raises(IncorrectTimestampError, match = 'Некорректный формат времени'):
+    with pytest.raises(IncorrectTimestampError, match = 'timestamp: Некорректный формат времени'):
         validation({'timestamp':'11.22.33','level':'INFO','source':'server1',
                        'message':'Запрос на /api/users обработан за 12 мс'})
