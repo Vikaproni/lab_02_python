@@ -11,7 +11,7 @@ from streamstats.report import writing_report
 def main(arguments: list[str]| None = None) -> None:
     '''Чтение командной строки, чтение файлов, анализ и формирование файла с отчетом'''
 
-    raw_arguments = list(sys.argv[:-1]) if arguments is None else list(arguments)#если параметры команды
+    raw_arguments = sys.argv[1:] if arguments is None else arguments #если параметры команды
     # переданы явно, то они принимаются сразу, иначе берем sys.argv
 
     #Разбор командной строки
@@ -21,9 +21,9 @@ def main(arguments: list[str]| None = None) -> None:
     analyze_parser = subparsers.add_parser('analyze', help='анализ файлов')
     analyze_parser.add_argument('input',nargs='+', help='входной(ые) файл(ы)')
     analyze_parser.add_argument('--format', choices = ['csv','jsonl'], required=True, help='формат файлов')
-    analyze_parser.add_argument('--output', default='REPORT.json', help='путь файла с отчетом(по умолчанию: "REPORT.json"')
+    analyze_parser.add_argument('--output', default='REPORT.json', help='путь файла с отчетом(по умолчанию: "REPORT.json")')
     analyze_parser.add_argument('--skip-invalid', action='store_true', help='пропуск некорректных строк')
-    arguments = parser.parse_args()
+    parsed = parser.parse_args(raw_arguments)
 
     logging.basicConfig(level=logging.WARNING, format='%(levelname)s - %(message)s')
 
@@ -32,12 +32,12 @@ def main(arguments: list[str]| None = None) -> None:
     skipped = [0]
 
     try:
-        for file_path in arguments.input: #чтение файлов, заполнение статистики
-            for line_number, event in read_file(file_path, arguments.format, skip_invalid=arguments.skip_invalid, skipped = skipped):
+        for file_path in parsed.input: #чтение файлов, заполнение статистики
+            for line_number, event in read_file(file_path, parsed.format, skip_invalid=parsed.skip_invalid, skipped = skipped):
                 analyze(event,statistics)
 
         result = final_statistics(statistics,skipped=skipped[0])
-        writing_report(result,arguments.output) #формирование файла с отчетом
+        writing_report(result,parsed.output) #формирование файла с отчетом
 
 
     except StreamStatsError as exc:
