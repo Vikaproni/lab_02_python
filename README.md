@@ -26,19 +26,19 @@
 
 Основные функции
 
-`read_file` — генератор: открывает файл, читает шапку CSV, построчно читает данные, парсит и валидирует
+- `read_file` — генератор: открывает файл, читает шапку CSV, построчно читает данные, парсит и валидирует
 
-`parser_csv` — разбирает CSV-строку в `dict`
-`parser_json` — разбирает JSONL-строку в `dict`
+- `parser_csv` — разбирает CSV-строку в `dict`
+- `parser_json` — разбирает JSONL-строку в `dict`
 
-`validation` — проверяет обязательные поля, тип значений, возвращает словарь с `datetime` в `timestamp`
+- `validation` — проверяет обязательные поля, тип значений, возвращает словарь с `datetime` в `timestamp`
 
-`new_statistics` — создаёт пустой `stats` со счётчиками
-`analyze` — формирует статистику
-`top_source_errors` — возвращает top-N источников ошибок `ERROR`/`CRITICAL`
-`final_statistics` — собирает словарь для JSON-отчёта
+- `new_statistics` — создаёт пустой `stats` со счётчиками
+- `analyze` — формирует статистику
+- `top_source_errors` — возвращает top-N источников ошибок `ERROR`/`CRITICAL`
+- `final_statistics` — собирает словарь для JSON-отчёта
 
-`writing_report` — записывает отчёт в JSON-файл
+- `writing_report` — записывает отчёт в JSON-файл
 
 Структура проекта
 ```
@@ -68,33 +68,33 @@ lab_02/
 ```
 Запуск
 
-bash
-cd src
-python -m streamstats analyze "data.csv" --format csv --output report.json
+bash  
+cd src  
+python -m streamstats analyze "data.csv" --format csv --output report.json  
 python -m streamstats analyze "data.jsonl" --format jsonl --output report.json
-python -m streamstats analyze "data.jsonl" --format jsonl --skip-invalid --output report.json
-python -m streamstats analyze file1.jsonl file2.jsonl --format jsonl --output report.json
+python -m streamstats analyze "data.jsonl" --format jsonl --skip-invalid --output report.json  
+python -m streamstats analyze file1.jsonl file2.jsonl --format jsonl --output report.json  
 python -m streamstats --help
 
 Тестирование
 
 Проект использует pytest. Запуск тестов из корня проекта (там, где pyproject.toml):
 
-bash
+bash  
 python -m pytest -v
 
 Дополнительная проверка стиля кода:
 
-bash
+bash  
 ruff check .
 
 Технологии
 
-Python 3.12.2
-pytest 9.1.1
+Python 3.12.2  
+pytest 9.1.1  
 ruff 0.16.8
 
 Автор
 
-Пронина Виктория
+Пронина Виктория  
 Группа: М8О – 101БВ – 26
