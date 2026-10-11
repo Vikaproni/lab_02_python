@@ -1,8 +1,8 @@
 import argparse
 import logging
 import sys
-
 from pathlib import Path
+
 from streamstats.analysis import analyze, final_statistics, new_statistics
 from streamstats.errors import StreamStatsError
 from streamstats.reader import read_file
