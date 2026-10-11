@@ -2,6 +2,7 @@ import argparse
 import logging
 import sys
 
+from pathlib import Path
 from streamstats.analysis import analyze, final_statistics, new_statistics
 from streamstats.errors import StreamStatsError
 from streamstats.reader import read_file
@@ -9,7 +10,8 @@ from streamstats.report import writing_report
 
 
 def main(arguments: list[str]| None = None) -> None:
-    '''Чтение командной строки, разбор аргументов,связывание чтения файлов, анализв и формирования файла с отчетом'''
+    '''Чтение командной строки, разбор аргументов,связывание чтения файлов, анализа и формирования файла с отчетом.
+     Также проверка на несовпадение путей исходных файлов и файла для отчета'''
 
     raw_arguments = sys.argv[1:] if arguments is None else arguments #если параметры команды
     # переданы явно, то они принимаются сразу, иначе берем sys.argv
@@ -30,6 +32,13 @@ def main(arguments: list[str]| None = None) -> None:
     #Связывание чтения, анализа, создания отчета; обработка ошибок
     statistics = new_statistics() #создание новой статистики
     skipped = [0]
+    output_path = Path(parsed.output).resolve() #определение путя файла для отчета
+
+    for file_path in parsed.input:  #проверка на то, что исходный файл не совпадает с файлом для отчета,
+        # ведь иначе произойдет перезапись данных
+        input_path = Path(file_path).resolve() #определение путей исходных файлов
+        if input_path == output_path: #если совпали
+            parser.error(f'Исходный файл совпадает с файлом для отчета: {file_path}')
 
     try:
         for file_path in parsed.input: #чтение файлов, заполнение статистики
