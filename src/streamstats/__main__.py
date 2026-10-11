@@ -21,7 +21,7 @@ def main(arguments: list[str]| None = None) -> None:
     analyze_parser = subparsers.add_parser('analyze', help='анализ файлов')
     analyze_parser.add_argument('input',nargs='+', help='входной(ые) файл(ы)')
     analyze_parser.add_argument('--format', choices = ['csv','jsonl'], required=True, help='формат файлов')
-    analyze_parser.add_argument('--output', default='REPORT.json', help='путь файла с отчетом(по умолчанию: "REPORT.json")')
+    analyze_parser.add_argument('--output', required=True, help='путь файла с отчетом(по умолчанию: "REPORT.json")')
     analyze_parser.add_argument('--skip-invalid', action='store_true', help='пропуск некорректных строк')
     parsed = parser.parse_args(raw_arguments)
 

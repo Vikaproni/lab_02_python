@@ -90,9 +90,19 @@ def test_invalid_skip_jsonl(tmp_path):
 def test_unicode_jsonl(tmp_path):
     '''Проверка чтения jsonl-файла c unicode-escape-последовательностью'''
     input_dates = tmp_path / "input_dates.jsonl"
-    input_dates.write_text('{"timestamp": "2026-01-10T09:00:01", "level": "INFO", "source": "server1", "message": "\\u0417\\u0430\\u043f\\u0440\\u043e\\u0441"}')
+    input_dates.write_text('{"timestamp": "2026-01-10T09:00:01", "level": "INFO", "source": "server1", "message": "\\u0417\\u0430\\u043f\\u0440\\u043e\\u0441"}',encoding='utf-8')
     assert list(read_file(str(input_dates),'jsonl')) == [(1,{'timestamp': datetime(2026, 1, 10, 9, 0, 1),
         'level': 'INFO', 'source': 'server1', 'message': 'Запрос'})]
+
+def test_error_seven_jsonl(tmp_path):
+    '''Проверка чтения jsonl-файла c шибкой в 7й строке, должен вывести поле, в котором ошибка, номер строки, тип ошибки'''
+    input_dates = tmp_path / "input_dates.jsonl"
+    input_dates.write_text('{"timestamp": "2026-01-10T09:00:01", "level": "INFO", "source": "server1", "message": "Загрузка данных"}\n'
+                           '{"timestamp": "2026-01-10T09:00:01", "level": "INFO", "source": "server1", "message": "Загрузка данных"}\n'
+                           '\n''\n''\n''\n'
+                           '{"timestamp": "2026-01-10T09:00:01", "level": "дфдфдф", "source": "server1", "message": "Загрузка данных"}\n',encoding='utf-8')
+    with pytest.raises(IncorrectEventError,match=': строка 7:'):
+        list(read_file(str(input_dates),'jsonl'))
 
 def test_invalid_no_skip_csv(tmp_path):
     '''Проверка чтения csv-файла без skip_invalid с неправильным событием'''
