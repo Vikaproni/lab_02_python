@@ -1,12 +1,13 @@
 """Приведение строк к общему виду"""
 from streamstats.errors import IncorrectEventError
 
-EXPECT_KEY, EXPECT_VALUE, AFTER_KEY, IN_KEY, IN_STRING, IN_ESCAPE, DONE = range(7) #состояния внутри строки
+START, EXPECT_KEY, EXPECT_VALUE, AFTER_KEY, IN_KEY, IN_STRING, IN_ESCAPE, AFTER_VALUE, DONE = range(9) #состояния внутри строки
 escapes = {'"': '"', '\\': '\\', '/': '/', 'n': '\n', 't': '\t'} #escape-символы
 fields = ('timestamp','level','source','message') #допустимые поля
 
 def parser_csv(line:str, columns: tuple[str, ...]|None = None, separator: str = ',') -> dict:
-    '''Приведение строк из csv-файла к общему виду'''
+    '''Приведение строк из csv-файла к общему виду, те преобразование обычных строк в словарь
+     с ключами ('timestamp','level','source','message')'''
     line = line.strip() #удаление ненужных пробелов и '\n'
     #Определение пустой строки
     if not line:
@@ -36,7 +37,8 @@ def parser_csv(line:str, columns: tuple[str, ...]|None = None, separator: str = 
 
 
 def parser_json(line:str) -> dict:
-    '''Приведение строк из jsonl-файла к общему виду'''
+    '''Приведение строк из jsonl-файла к общему виду, те преобразование json в словарь
+     с ключами ('timestamp','level','source','message')'''
     line = line.strip()
     if not line:
         raise IncorrectEventError('Пустая строка')
@@ -45,29 +47,38 @@ def parser_json(line:str) -> dict:
         raise IncorrectEventError('Ожидался JSON-объект')
 
     result = {}
-    state = EXPECT_KEY #определение, где находится символ
+    state = START #определение, где находится символ
     key = ''
     value = ''
     position = 1
 
     while position <  len(line):
         char = line[position]
-        #в начале строки или после значения
-        if state == EXPECT_KEY:
+        #в начале строки
+        if state == START:
+            if char == ' ':
+                pass
+            elif char == '"':
+                key = ''
+                state = IN_KEY
+            elif char == '}': #пустой объект
+                state = DONE
+            else:
+                raise IncorrectEventError('Ожидался ключ')
+
+        #еще не в ключе
+        elif state == EXPECT_KEY:
             if char == '"':
                 key = ''
                 state = IN_KEY
-            elif char in ' ,':
+            elif char == ' ':
                 pass
-            elif char == '}':
-                state = DONE
-                break
             else:
                 raise IncorrectEventError('Ожидался ключ')
 
         #в ключе
         elif state == IN_KEY:
-            if char == '\\':
+            if char == '\\': #в ключе не может быть экранирования, там должно быть конкретное название поля
                 raise IncorrectEventError('Некорректно введен ключ')
             elif char == '"':
                 state = AFTER_KEY
@@ -101,9 +112,20 @@ def parser_json(line:str) -> dict:
                 result[key] = value #добавление значения к ключу
                 key = ''
                 value = ''
-                state = EXPECT_KEY
+                state = AFTER_VALUE
             else:
                 value+=char
+
+        #сразу после значения
+        elif state == AFTER_VALUE:
+            if char == ' ':
+                pass
+            elif char == ',':
+                state = EXPECT_KEY
+            elif char == '}':
+                state = DONE
+            else:
+                raise IncorrectEventError('Неверный json формат')
 
         #если есть экранирование
         elif state == IN_ESCAPE:
@@ -128,6 +150,11 @@ def parser_json(line:str) -> dict:
                 value+=decoded
                 state = IN_STRING
 
+        #в конце json-объекта
+        elif state == DONE:
+            if char != ' ': #если после закрывающей } есть какие-либо еще лишние символы, обрабатываем как ошибку,
+                # тк это нарушение формата json-объекта
+                raise IncorrectEventError('Символы после закрывающей скобки')
         else:
             raise IncorrectEventError('Ошибка')
 

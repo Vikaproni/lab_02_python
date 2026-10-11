@@ -1,9 +1,9 @@
-'''Анализ файлов, составление финальной статистики для отчета'''
+'''Анализ файлов, заполнение статистики, составление финальной статистики для отчета'''
 from datetime import datetime
 
 
 def new_statistics() -> dict:
-    '''Создание новой статистики'''
+    '''Создание новой нулевой статистики'''
     return {
         'total_events': 0,
         'count_levels': {'DEBUG': 0, 'INFO': 0, 'WARNING': 0, 'ERROR': 0, 'CRITICAL': 0},
@@ -14,7 +14,7 @@ def new_statistics() -> dict:
     }
 
 def analyze(provided_line: dict, statistics:dict) -> None:
-    '''Анализ строк, подсчет всех необходимых характеристик'''
+    '''Анализ строк, подсчет всех необходимых характеристик, заполнение статистики'''
     statistics['total_events'] += 1 #подсчет всех событий
     statistics['count_levels'][provided_line['level']]+=1 #подсчет событий каждого уровня
     statistics['count_source'][provided_line['source']] = (statistics['count_source'].get(provided_line['source'],0)) + 1 #подсчет
@@ -32,7 +32,7 @@ def analyze(provided_line: dict, statistics:dict) -> None:
         statistics['last_timestamp'] = timestamp
 
 def top_source_errors(source_errors:dict, top_n:int = 5) -> list:
-    '''Нахождение топ - n источников ошибок ERROR/CRITICAL'''
+    '''Нахождение топ - 5 источников ошибок ERROR/CRITICAL, сортировка их сначала по значению, потом по имени'''
     source_errors = sorted(source_errors.items(), key=lambda x: x[0]) #сортировка источников по значению
     source_errors = sorted(source_errors, key=lambda x:x[-1], reverse=True) #сортировка источников по номеру
     return [{'source': source, 'count': count} for source, count in source_errors[:top_n]]

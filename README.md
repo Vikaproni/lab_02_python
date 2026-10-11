@@ -35,7 +35,7 @@
 
 - `new_statistics` — создаёт пустой `stats` со счётчиками
 - `analyze` — формирует статистику
-- `top_source_errors` — возвращает top-N источников ошибок `ERROR`/`CRITICAL`
+- `top_source_errors` — возвращает top-5 источников ошибок `ERROR`/`CRITICAL`
 - `final_statistics` — собирает словарь для JSON-отчёта
 
 - `writing_report` — записывает отчёт в JSON-файл

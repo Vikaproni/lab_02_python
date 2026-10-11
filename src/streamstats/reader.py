@@ -1,4 +1,4 @@
-'''Чтение файла'''
+'''Чтение файла, логгирование ошибок, определение наличия заголовка в csv-файле, парсинг строк'''
 import logging
 from collections.abc import Generator
 from typing import Any

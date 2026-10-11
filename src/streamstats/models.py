@@ -1,4 +1,4 @@
-'''Валидация строк'''
+'''Валидация строк, проверка входных данных на корректность, на наличие всех необходимых полей'''
 from datetime import datetime
 
 from streamstats.errors import IncorrectEventError, IncorrectTimestampError

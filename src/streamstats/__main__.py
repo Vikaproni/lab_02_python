@@ -9,7 +9,7 @@ from streamstats.report import writing_report
 
 
 def main(arguments: list[str]| None = None) -> None:
-    '''Чтение командной строки, чтение файлов, анализ и формирование файла с отчетом'''
+    '''Чтение командной строки, разбор аргументов,связывание чтения файлов, анализв и формирования файла с отчетом'''
 
     raw_arguments = sys.argv[1:] if arguments is None else arguments #если параметры команды
     # переданы явно, то они принимаются сразу, иначе берем sys.argv
@@ -41,6 +41,10 @@ def main(arguments: list[str]| None = None) -> None:
 
 
     except StreamStatsError as exc:
+        print(f'Ошибка: {exc}', file=sys.stderr)
+        sys.exit(2)
+
+    except (FileNotFoundError,PermissionError) as exc:
         print(f'Ошибка: {exc}', file=sys.stderr)
         sys.exit(2)
 

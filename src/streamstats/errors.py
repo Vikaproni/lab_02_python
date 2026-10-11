@@ -1,4 +1,4 @@
-'''Исключения'''
+'''Исключения пакета'''
 
 class StreamStatsError(Exception):
     pass
